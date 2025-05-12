@@ -6,6 +6,7 @@ import zlib
 output_dir = './mnt/data/png_seeds_errors'
 os.makedirs(output_dir, exist_ok=True)
 
+
 # Helper to write PNG with custom chunks
 def write_png(chunks, filename):
     png_signature = b'\x89PNG\r\n\x1a\n'
@@ -22,6 +23,7 @@ def write_png(chunks, filename):
             else:
                 crc = zlib.crc32(chunk_type + data) & 0xffffffff
             f.write(struct.pack("!I", crc))
+
 
 # Standard IHDR and IDAT for a 1x1 black pixel
 ihdr_data = struct.pack("!IIBBBBB", 1, 1, 8, 2, 0, 0, 0)
@@ -82,4 +84,3 @@ for name, chunks in seeds.items():
 
 # List generated files
 os.listdir(output_dir)
-
