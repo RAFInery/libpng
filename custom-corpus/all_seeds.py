@@ -48,8 +48,11 @@ class DefaultChunks:
         return Chunk(b'IHDR', data)
 
     @staticmethod
-    def PLTE() -> Chunk:
-        pass
+    def PLTE(entries: list[tuple[int, int, int]]) -> Chunk:
+        # Pack each RGB triple
+        raw = b''.join(bytes([r, g, b]) for r, g, b in entries)
+        return Chunk(b'PLTE', raw)
+
     @staticmethod
     def IDAT(raw_pixels: bytes) -> Chunk:
         compressed = zlib.compress(raw_pixels)
@@ -60,20 +63,35 @@ class DefaultChunks:
         return Chunk(b'IEND', b'')
 
     @staticmethod
-    def bKGD() -> Chunk:
-        pass
+    def bKGD(rgb: tuple[int, int, int]) -> Chunk:
+        # Background color for truecolor
+        data = struct.pack("!HHH", rgb[0], rgb[1], rgb[2])
+        return Chunk(b'bKGD', data)
+
     @staticmethod
-    def cHRM() -> Chunk:
-        pass
+    def cHRM(white_x: int, white_y: int,
+             red_x: int, red_y: int,
+             green_x: int, green_y: int,
+             blue_x: int, blue_y: int) -> Chunk:
+        data = struct.pack("!IIIIIIII",
+                           white_x, white_y,
+                           red_x, red_y,
+                           green_x, green_y,
+                           blue_x, blue_y)
+        return Chunk(b'cHRM', data)
+
     @staticmethod
-    def gAMA() -> Chunk:
-        pass
+    def gAMA(gamma: float) -> Chunk:
+        # Gamma stored as gamma*100000, unsigned 32-bit
+        val = int(gamma * 100000)
+        data = struct.pack("!I", val)
+        return Chunk(b'gAMA', data)
+
     @staticmethod
-    def gAMA() -> Chunk:
-        pass
-    @staticmethod
-    def hIST() -> Chunk:
-        pass
+    def hIST(freqs: list[int]) -> Chunk:
+        # Histogram: one uint16 per palette entry
+        data = b''.join(struct.pack("!H", f) for f in freqs)
+        return Chunk(b'hIST', data)
 
     @staticmethod
     def pHYs(x_ppu: int, y_ppu: int, unit: int = 1) -> Chunk:
@@ -81,8 +99,10 @@ class DefaultChunks:
         return Chunk(b'pHYs', data)
 
     @staticmethod
-    def sBIT() -> Chunk:
-        pass
+    def sBIT(bits: list[int]) -> Chunk:
+        # Significant bits: number of bits for each channel
+        data = bytes(bits)
+        return Chunk(b'sBIT', data)
 
     @staticmethod
     def tEXt(keyword: str, text: str) -> Chunk:
@@ -90,11 +110,20 @@ class DefaultChunks:
         return Chunk(b'tEXt', payload)
 
     @staticmethod
-    def tIME()-> Chunk:
-        pass
+    def tIME(year: int, month: int, day: int, hour: int, minute: int, second: int) -> Chunk:
+        data = struct.pack("!HBBBBB", year, month, day, hour, minute, second)
+        return Chunk(b'tIME', data)
+
     @staticmethod
-    def tRNS()-> Chunk:
-        pass
+    def tRNS(transparency) -> Chunk:
+        # Transparency: for palette, list of alpha values; for truecolor, tuple of uint16
+        if isinstance(transparency, list):
+            data = bytes(transparency)
+        elif isinstance(transparency, tuple) and len(transparency) == 3:
+            data = struct.pack("!HHH", *transparency)
+        else:
+            raise ValueError("Unsupported tRNS format")
+        return Chunk(b'tRNS', data)
 
 
 # Test harness to generate seeds
