@@ -102,6 +102,7 @@ class DefaultChunks:
     def sBIT(bits: list[int]) -> Chunk:
         # Significant bits: number of bits for each channel
         data = bytes(bits)
+        print(data)
         return Chunk(b'sBIT', data)
 
     @staticmethod
@@ -182,7 +183,9 @@ if __name__ == '__main__':
         (0xFFFFFFFF, 0xFFFFFFFF, 1, 'edge_max_uint32.png'),
         (4294960000, 1, 1, 'edge_overflow_x.png'),
         (1, 4294960000, 1, 'edge_overflow_y.png'),
-        (2835, 2835, 2, 'edge_invalid_unit_specifier.png')
+        (2835, 2835, 2, 'edge_invalid_unit_specifier.png'),
+        (2835, 2835, 12, 'edge_invalid_unit_specifier2.png'),
+        (-1, 444, -1, 'edge_invalid_unit_specifier3.png'),
     ]
     phys_seeds = {}
     for xppu, yppu, unit, name in ppu_values:
@@ -233,8 +236,154 @@ if __name__ == '__main__':
         ]
     }
 
+    #4) Edge case seeds
+    edge_case_seeds = {
+        'ec_plte_6.png': [DefaultChunks.IHDR(4,4, color_type=6),
+                          Chunk(b'PLTE', b''),
+                          Chunk(b'PLTE', bytes([100, 0, 0, 0, 255, 0, 0, 0, 255])),
+                          DefaultChunks.IDAT(raw_black),
+                          DefaultChunks.IEND()
+                          ],
+        'ec_plte_6_trns_idat_badcrc.png': [
+            DefaultChunks.IHDR(4, 4, color_type=6),
+            Chunk(b'PLTE', bytes([255, 0, 0, 0, 255, 0, 0, 0, 255])),
+            Chunk(b'tRNS', bytes([128, 64, 0]), crc_override=0),
+            Chunk(b'IDAT', zlib.compress(b'\x00' * (4 * 4 * 4)), crc_override=0),
+            DefaultChunks.IEND()
+        ],
+        'significance_bits_ok.png': [
+
+            DefaultChunks.IHDR(4, 4, bit_depth=8, color_type=3),
+            DefaultChunks.PLTE([
+                (255, 0, 0),
+                (0, 255, 0),
+                (0, 0, 255)
+            ]),
+            DefaultChunks.IDAT(
+                b''.join([b'\x00' + bytes([0, 1, 2, 0]) for _ in range(4)])  # filter byte + 4px row
+            ),
+            DefaultChunks.IEND(),
+            DefaultChunks.sBIT([8, 8, 8]),
+        ],
+        'significance_bits_bad.png': [
+
+            DefaultChunks.IHDR(4, 4, bit_depth=8, color_type=3),
+            DefaultChunks.PLTE([
+                (255, 0, 0),
+                (0, 255, 0),
+                (0, 0, 255)
+            ]),
+            DefaultChunks.sBIT([255, 0, 0, 255, 0, 255, 0, 255, 0, 255, 0, 255]),
+            DefaultChunks.IDAT(
+                b''.join([b'\x00' + bytes([0, 1, 2, 0]) for _ in range(4)])  # filter byte + 4px row
+            ),
+            DefaultChunks.IEND(),
+        ],
+        'significance_bits_bad_2.png': [
+
+            DefaultChunks.IHDR(4, 4, bit_depth=8, color_type=3),
+            DefaultChunks.PLTE([
+                (255, 0, 0),
+                (0, 255, 0),
+                (0, 0, 255)
+            ]),
+            DefaultChunks.sBIT([]),
+            DefaultChunks.IDAT(
+                b''.join([b'\x00' + bytes([0, 1, 2, 0]) for _ in range(4)])  # filter byte + 4px row
+            ),
+            DefaultChunks.IEND(),
+        ],
+        'ok_text.png': [
+
+            DefaultChunks.IHDR(4, 4, bit_depth=8, color_type=3),
+            DefaultChunks.PLTE([
+                (255, 0, 0),
+                (0, 255, 0),
+                (0, 0, 255)
+            ]),
+            DefaultChunks.IDAT(
+                b''.join([b'\x00' + bytes([0, 1, 2, 0]) for _ in range(4)])  # filter byte + 4px row
+            ),
+            DefaultChunks.IEND(),
+            Chunk(b'tEXt', b"Title" + b"\x00" + b"The Everything PNG"),
+
+        ],
+        'improper_text.png': [
+            DefaultChunks.IHDR(4, 4, bit_depth=8, color_type=3),
+            DefaultChunks.PLTE([
+                (255, 0, 0),  # Red
+                (0, 255, 0),  # Green
+                (0, 0, 255)  # Blue
+            ]),
+            DefaultChunks.IDAT(
+                b''.join([b'\x00' + bytes([0, 1, 2, 0]) for _ in range(4)])  # filter byte + 4px row
+            ),
+            DefaultChunks.IEND(),
+            Chunk(b'tEXt', b"Title" + b"\x00" + "The Funky PNG❤️".encode('utf-8')),
+
+        ],
+        'everything_correct.png': [
+
+            DefaultChunks.IHDR(4, 4, bit_depth=8, color_type=3),
+            DefaultChunks.PLTE([
+                (255, 0, 0),
+                (0, 255, 0),
+                (0, 0, 255),
+            ]),
+            DefaultChunks.tRNS([255, 128, 0]),
+            DefaultChunks.IDAT(
+                b''.join([b'\x00' + bytes([0, 1, 2, 0]) for _ in range(4)])
+            ),
+            DefaultChunks.IEND(),
+
+            # Ancillary chunks
+            DefaultChunks.bKGD((0, 0, 0)),
+            DefaultChunks.cHRM(
+                white_x=31270, white_y=32900,
+                red_x=64000, red_y=33000,
+                green_x=30000, green_y=60000,
+                blue_x=15000, blue_y=6000
+            ),
+            DefaultChunks.gAMA(0.45455),
+            DefaultChunks.hIST([10, 20, 30]),
+            DefaultChunks.pHYs(2835, 2835),
+            DefaultChunks.sBIT([8, 8, 8]),
+            DefaultChunks.tEXt("Title", "The Everything PNG"),
+            DefaultChunks.tIME(2025, 5, 12, 14, 0, 0)
+        ],
+        'everything_incorrect.png': [
+            # Critical chunks
+            DefaultChunks.IHDR(4, 4, bit_depth=8, color_type=6),
+            DefaultChunks.PLTE([
+                (10, 0, 0),
+                (1, 20, 5),
+                (0, 100, 30),
+            ]),
+            DefaultChunks.tRNS([255, 12, 0]),
+            DefaultChunks.IDAT(
+                b''.join([b'\x00' + bytes([0, 1, 2, 0]) for _ in range(4)])
+            ),
+            DefaultChunks.IEND(),
+
+            # Ancillary chunks
+            DefaultChunks.bKGD((0, 255, 0)),
+            DefaultChunks.cHRM(
+                white_x=310, white_y=32900,
+                red_x=640, red_y=330000,
+                green_x=30000, green_y=600,
+                blue_x=15, blue_y=600
+            ),
+            DefaultChunks.gAMA(12),
+            DefaultChunks.hIST([10, 21, 30]),
+            DefaultChunks.pHYs(2835, 235),
+            DefaultChunks.sBIT([8, 4, 5]),
+            Chunk(b'tEXt', b"Title"+ b"\x00" + "The Everything PNG🫶🫶🫶🫶".encode('utf-8')),
+            DefaultChunks.tIME(20, 5, 12, 14, 100, 75)
+        ]
+    }
+
     # Combine all seed groups
-    all_seeds = {**error_seeds, **phys_seeds, **bug_seeds}
+    all_seeds = {**error_seeds, **phys_seeds, **bug_seeds, **edge_case_seeds}
 
     # Generate files
     for name, chunks in all_seeds.items():
