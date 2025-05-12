@@ -28,6 +28,7 @@ cat scripts/pnglibconf.dfa | \
       -e "s/option WARNING /option WARNING disabled/" \
       -e "s/option WRITE enables WRITE_INT_FUNCTIONS/option WRITE disabled/" \
 > scripts/pnglibconf.dfa.temp
+echo "\n option PNG_SEQUENTIAL_READ_SUPPORTED enabled" >> scripts/pnglibconf.dfa.temp
 mv scripts/pnglibconf.dfa.temp scripts/pnglibconf.dfa
 
 # build the libpng library.
