@@ -129,7 +129,7 @@ class DefaultChunks:
 
 # Test harness to generate seeds
 if __name__ == '__main__':
-    output_base = './mnt/data/png_seeds_oop'
+    output_base = './mnt/data/custom_png_seeds'
     raw_black = b"\x00" + bytes([0, 0, 0])  # filter byte + black pixel
     os.makedirs(output_base, exist_ok=True)
 
