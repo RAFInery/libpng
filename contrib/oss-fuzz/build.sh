@@ -28,6 +28,7 @@ cat scripts/pnglibconf.dfa | \
       -e "s/option WARNING /option WARNING disabled/" \
       -e "s/option WRITE enables WRITE_INT_FUNCTIONS/option WRITE disabled/" \
       -e "s/option SEQUENTIAL_READ/option SEQUENTIAL_READ enabled/" \
+      -e "s/option MNG_FEATURES/option MNG_FEATURES enabled/
 > scripts/pnglibconf.dfa.temp
 mv scripts/pnglibconf.dfa.temp scripts/pnglibconf.dfa
 
