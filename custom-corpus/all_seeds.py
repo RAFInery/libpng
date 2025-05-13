@@ -185,7 +185,7 @@ if __name__ == '__main__':
         (1, 4294960000, 1, 'edge_overflow_y.png'),
         (2835, 2835, 2, 'edge_invalid_unit_specifier.png'),
         (2835, 2835, 12, 'edge_invalid_unit_specifier2.png'),
-        (-1, 444, -1, 'edge_invalid_unit_specifier3.png'),
+        (1, 444, 133, 'edge_invalid_unit_specifier3.png'),
     ]
     phys_seeds = {}
     for xppu, yppu, unit, name in ppu_values:
@@ -379,6 +379,23 @@ if __name__ == '__main__':
             DefaultChunks.sBIT([8, 4, 5]),
             Chunk(b'tEXt', b"Title"+ b"\x00" + "The Everything PNG🫶🫶🫶🫶".encode('utf-8')),
             DefaultChunks.tIME(20, 5, 12, 14, 100, 75)
+        ],
+        'incorrect_chrm.png': [
+
+            DefaultChunks.IHDR(4, 4, bit_depth=8, color_type=3),
+            DefaultChunks.PLTE([
+                (255, 25, 255),
+                (0, 255, 0),
+                (0, 0, 255),
+            ]),
+            DefaultChunks.IDAT(
+                b''.join([b'\x00' + bytes([0, 1, 2, 0]) for _ in range(4)])
+            ),
+            DefaultChunks.IEND(),
+            Chunk(b'cHRM', b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff'
+                           b'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\x00'),
+            DefaultChunks.gAMA(1),
+
         ]
     }
 
