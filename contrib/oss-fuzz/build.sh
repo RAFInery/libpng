@@ -27,6 +27,7 @@ cat scripts/pnglibconf.dfa | \
   sed -e "s/option STDIO/option STDIO disabled/" \
       -e "s/option WARNING /option WARNING disabled/" \
       -e "s/option WRITE enables WRITE_INT_FUNCTIONS/option WRITE disabled/" \
+      -e "s/option EASY_ACCESS/option EASY_ACCESS enabled/" \
 > scripts/pnglibconf.dfa.temp
 mv scripts/pnglibconf.dfa.temp scripts/pnglibconf.dfa
 
@@ -43,7 +44,7 @@ $CXX $CXXFLAGS -std=c++11 -I. \
      -lFuzzingEngine .libs/libpng16.a -lz
 
 # add seed corpus.
-find $SRC/libpng -name "*.png" | grep -v crashers | \
+find $SRC/libpng/custom-corpus -name "*.png" | grep -v crashers | \
      xargs zip $OUT/libpng_read_fuzzer_seed_corpus.zip
 
 cp $SRC/libpng/contrib/oss-fuzz/*.dict \
