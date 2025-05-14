@@ -222,11 +222,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       (void)unit_type;
   }
 
-  float dpi_x, dpi_y;
-  if (png_get_pHYs_dpi(png_handler.png_ptr, png_handler.info_ptr, &dpi_x, &dpi_y)) {
-      (void)dpi_x;
-      (void)dpi_y;
-  }
   
   png_read_end(png_handler.png_ptr, png_handler.end_info_ptr);
 
