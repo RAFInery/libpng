@@ -178,8 +178,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                       height, bit_depth, color_type, interlace_type,
                       compression_type, PNG_INTRAPIXEL_DIFFERENCING);
 
-  png_handler.png_ptr->mng_features_permitted |= 4;
-
   
 
   // This is going to be too slow.
