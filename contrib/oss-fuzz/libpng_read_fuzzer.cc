@@ -203,7 +203,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   (void)png_get_valid(png_handler.png_ptr, png_handler.info_ptr, PNG_INFO_PLTE);
   (void)png_get_valid(png_handler.png_ptr, png_handler.info_ptr, PNG_INFO_sRGB);
   (void)png_get_valid(png_handler.png_ptr, png_handler.info_ptr, PNG_INFO_pHYs);
-  png_bytepp row_pointers = png_get_rows(png_handler.png_ptr, info_ptr);
+  png_bytepp row_pointers = png_get_rows(png_handler.png_ptr, png_handler.info_ptr);
   if (row_pointers) {
       // TODO operations on rows
       volatile png_bytep first_row = row_pointers[0];
