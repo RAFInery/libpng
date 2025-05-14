@@ -222,6 +222,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       (void)unit_type;
   }
 
+  png_textp text_ptr = nullptr;
+  int num_text = 0;
+  if (png_get_text(png_handler.png_ptr, png_handler.info_ptr, &text_ptr, &num_text) > 0 && text_ptr != nullptr) {
+      for (int i = 0; i < num_text && i < 100; ++i) { // limit to avoid fuzz overrun
+          volatile char *key = text_ptr[i].key;
+          volatile char *text = text_ptr[i].text;
+          volatile int compression = text_ptr[i].compression;
+          (void)key;
+          (void)text;
+          (void)compression;
+      }
+  }
   
   png_read_end(png_handler.png_ptr, png_handler.end_info_ptr);
 
