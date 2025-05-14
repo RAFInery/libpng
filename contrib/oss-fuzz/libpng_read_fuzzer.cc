@@ -143,7 +143,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     3,              // Number of colors in the palette
     2,            // Max colors allowed
     NULL,    // Optional background
-    0               // Do not use full palette unless needed
+    1               // Do not use full palette unless needed
   );  
 
 
