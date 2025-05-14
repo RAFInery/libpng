@@ -176,7 +176,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   png_set_IHDR(png_handler.png_ptr, png_handler.info_ptr, width,
                       height, bit_depth, color_type, interlace_type,
-                      compression_type, PNG_INTRAPIXEL_DIFFERENCING)
+                      compression_type, PNG_INTRAPIXEL_DIFFERENCING);
 
   png_handler.png_ptr->mng_features_permitted |= 4;
 
