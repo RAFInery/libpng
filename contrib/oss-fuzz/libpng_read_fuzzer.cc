@@ -203,19 +203,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   (void)png_get_valid(png_handler.png_ptr, png_handler.info_ptr, PNG_INFO_PLTE);
   (void)png_get_valid(png_handler.png_ptr, png_handler.info_ptr, PNG_INFO_sRGB);
   (void)png_get_valid(png_handler.png_ptr, png_handler.info_ptr, PNG_INFO_pHYs);
-  png_bytepp row_pointers = png_get_rows(png_ptr, info_ptr);
+  png_bytepp row_pointers = png_get_rows(png_handler.png_ptr, info_ptr);
   if (row_pointers) {
       // TODO operations on rows
       volatile png_bytep first_row = row_pointers[0];
       (void)first_row;
   }
-  png_uint_32 xppm = png_get_x_pixels_per_meter(png_ptr, info_ptr);
-  png_uint_32 yppm = png_get_y_pixels_per_meter(png_ptr, info_ptr);
-  png_uint_32 pppm = png_get_pixels_per_meter(png_ptr, info_ptr);
+  png_uint_32 xppm = png_get_x_pixels_per_meter(png_handler.png_ptr, png_handler.info_ptr);
+  png_uint_32 yppm = png_get_y_pixels_per_meter(png_handler.png_ptr, png_handler.info_ptr);
+  png_uint_32 pppm = png_get_pixels_per_meter(png_handler.png_ptr, png_handler.info_ptr);
 
   png_uint_32 phys_x, phys_y;
   int unit_type;
-  if (png_get_pHYs(png_ptr, info_ptr, &phys_x, &phys_y, &unit_type)) {
+  if (png_get_pHYs(png_handler.png_ptr, png_handler.info_ptr, &phys_x, &phys_y, &unit_type)) {
       // TODO use or validate values
       (void)phys_x;
       (void)phys_y;
@@ -223,7 +223,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   float dpi_x, dpi_y;
-  if (png_get_pHYs_dpi(png_ptr, info_ptr, &dpi_x, &dpi_y)) {
+  if (png_get_pHYs_dpi(png_handler.png_ptr, png_handler.info_ptr, &dpi_x, &dpi_y)) {
       (void)dpi_x;
       (void)dpi_y;
   }
