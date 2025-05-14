@@ -126,6 +126,25 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   }
 
+  // Example palette with basic RGB colors (up to 256)
+  png_color palette[3] = {
+    {255, 0, 0},   // Red
+    {0, 255, 0},   // Green
+    {0, 0, 255}    // Blue
+  };
+  
+  
+  // Enable quantization
+  png_set_quantize(
+    png_handler.png_ptr,
+    palette,        // Your palette
+    3,              // Number of colors in the palette
+    256,            // Max colors allowed
+    NULL,    // Optional background
+    0               // Do not use full palette unless needed
+  );  
+
+
   png_handler.end_info_ptr = png_create_info_struct(png_handler.png_ptr);
   if (!png_handler.end_info_ptr) {
     PNG_CLEANUP
@@ -198,11 +217,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_bytep fake_icc_profile_data = (png_bytep)"\x02\x00\x00\x00\x6c\x63\x6d\x73\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf6\xd6\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x73\x52\x47\x42\x20\x00\x00\x00";
   png_uint_32 fake_icc_profile_len = strlen((const char*)fake_icc_profile_data);
   png_const_charp profile_name = "Fake sRGB Profile";
-  png_set_iCCP(png_handler.png_ptr, png_handler.info_ptr, profile_name, PNG_COMPRESSION_TYPE_BASE,fake_icc_profile_data, fake_icc_profile_len);
-  int unit = 1;
-  double pixel_width = 0.01;   // Each pixel is 1 cm wide
-  double pixel_height = 0.01;  // Each pixel is 1 cm tall
-  png_set_sCAL(png_handler.png_ptr, png_handler.info_ptr, unit, pixel_width, pixel_height);
+  //png_set_iCCP(png_handler.png_ptr, png_handler.info_ptr, profile_name, PNG_COMPRESSION_TYPE_BASE,fake_icc_profile_data, fake_icc_profile_len);
+
 
   int passes = png_set_interlace_handling(png_handler.png_ptr);
 
