@@ -239,10 +239,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     (void)png_get_pixel_aspect_ratio_fixed(png_handler.png_ptr, png_handler.info_ptr);
     (void)png_get_x_offset_microns(png_handler.png_ptr, png_handler.info_ptr);
     (void)png_get_pixels_per_inch(png_handler.png_ptr, png_handler.info_ptr);
-    float dpi_x, dpi_y;
-    (void)png_get_pHYs_dpi(png_handler.png_ptr, png_handler.info_ptr, &dpi_x, &dpi_y);
-
-
     png_color_16p bg;
     if (png_get_bKGD(png_handler.png_ptr, png_handler.info_ptr, &bg)) {
         volatile png_uint_16 red = bg->red;
