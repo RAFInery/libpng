@@ -166,12 +166,19 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   int bit_depth, color_type, interlace_type, compression_type;
   int filter_type;
 
+  
   if (!png_get_IHDR(png_handler.png_ptr, png_handler.info_ptr, &width,
-                    &height, &bit_depth, &color_type, &interlace_type,
-                    &compression_type, &filter_type)) {
-    PNG_CLEANUP
-    return 0;
-  }
+    &height, &bit_depth, &color_type, &interlace_type,
+    &compression_type, &filter_type)) {
+      PNG_CLEANUP
+      return 0;
+    }
+
+  png_set_IHDR(png_handler.png_ptr, png_handler.info_ptr, width,
+                      height, bit_depth, color_type, interlace_type,
+                      compression_type, PNG_INTRAPIXEL_DIFFERENCING)
+
+  png_handler.png_ptr->mng_features_permitted |= 4;
 
   
 
@@ -190,7 +197,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_iCCP(png_handler.png_ptr, png_handler.info_ptr,
      "hola", PNG_COMPRESSION_TYPE_BASE,{}, 0);
   png_set_sCAL_fixed(png_handler.png_ptr, png_handler.info_ptr, 1, 1, 1);
-
 
   int passes = png_set_interlace_handling(png_handler.png_ptr);
 
