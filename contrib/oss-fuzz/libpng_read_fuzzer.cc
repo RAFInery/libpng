@@ -234,6 +234,41 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           (void)compression;
       }
   }
+
+    (void)png_get_pixel_aspect_ratio(png_handler.png_ptr, png_handler.info_ptr);
+    (void)png_get_pixel_aspect_ratio_fixed(png_handler.png_ptr, png_handler.info_ptr);
+    (void)png_get_x_offset_microns(png_handler.png_ptr, png_handler.info_ptr);
+    (void)png_get_pixels_per_inch(png_handler.png_ptr, png_handler.info_ptr);
+    float dpi_x, dpi_y;
+    (void)png_get_pHYs_dpi(png_handler.png_ptr, png_handler.info_ptr, &dpi_x, &dpi_y);
+
+
+    png_color_16p bg;
+    if (png_get_bKGD(png_handler.png_ptr, png_handler.info_ptr, &bg)) {
+        volatile png_uint_16 red = bg->red;
+        volatile png_uint_16 green = bg->green;
+        volatile png_uint_16 blue = bg->blue;
+        (void)red; (void)green; (void)blue;
+    }
+
+
+    png_colorp palette = nullptr;
+    int num_palette = 0;
+    if (png_get_PLTE(png_handler.png_ptr, png_handler.info_ptr, &palette, &num_palette) && palette != nullptr) {
+        volatile png_byte r = palette[0].red;
+        volatile png_byte g = palette[0].green;
+        volatile png_byte b = palette[0].blue;
+        (void)r; (void)g; (void)b;
+    }
+
+
+    png_color_8p sig_bits = nullptr;
+    if (png_get_sBIT(png_handler.png_ptr, png_handler.info_ptr, &sig_bits) && sig_bits != nullptr) {
+        volatile png_byte red_bits = sig_bits->red;
+        volatile png_byte green_bits = sig_bits->green;
+        volatile png_byte blue_bits = sig_bits->blue;
+        (void)red_bits; (void)green_bits; (void)blue_bits;
+    }
   
   png_read_end(png_handler.png_ptr, png_handler.end_info_ptr);
 
