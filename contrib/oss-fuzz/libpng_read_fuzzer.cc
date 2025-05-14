@@ -147,6 +147,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_read_fn(png_handler.png_ptr, png_handler.buf_state, user_read_data);
   png_set_sig_bytes(png_handler.png_ptr, kPngHeaderSize);
 
+
   if (setjmp(png_jmpbuf(png_handler.png_ptr))) {
     PNG_CLEANUP
     return 0;
@@ -172,6 +173,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   }
 
+  
+
   // This is going to be too slow.
   if (width && height > 100000000 / width) {
     PNG_CLEANUP
@@ -184,9 +187,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_packing(png_handler.png_ptr);
   png_set_scale_16(png_handler.png_ptr);
   png_set_tRNS_to_alpha(png_handler.png_ptr);
+  png_set_iCCP(png_handler.png_ptr, png_handler.info_ptr,
+     "hola", PNG_COMPRESSION_TYPE_BASE,{}, 0);
+  png_set_sCAL_fixed(png_handler.png_ptr, png_handler.info_ptr, 1, 1, 1);
 
-  png_set_bgr(png_handler.png_ptr);
-  png_set_swap_alpha(png_handler.png_ptr);
 
   int passes = png_set_interlace_handling(png_handler.png_ptr);
 
@@ -199,7 +203,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   for (int pass = 0; pass < passes; ++pass) {
     for (png_uint_32 y = 0; y < height; ++y) {
       png_read_row(png_handler.png_ptr,
-                   static_cast<png_bytep>(png_handler.row_ptr), nullptr);
+                   static_cast<png_bytep>(png_handler.row_ptr), nullptr);             
     }
   }
 
