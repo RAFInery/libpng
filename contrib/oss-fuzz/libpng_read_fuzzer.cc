@@ -199,7 +199,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_uint_32 fake_icc_profile_len = strlen((const char*)fake_icc_profile_data);
   png_const_charp profile_name = "Fake sRGB Profile";
   png_set_iCCP(png_handler.png_ptr, png_handler.info_ptr, profile_name, PNG_COMPRESSION_TYPE_BASE,fake_icc_profile_data, fake_icc_profile_len);
-  //png_set_sCAL_fixed(png_handler.png_ptr, png_handler.info_ptr, 1, 1, 1);
+  int unit = 1;
+  double pixel_width = 0.01;   // Each pixel is 1 cm wide
+  double pixel_height = 0.01;  // Each pixel is 1 cm tall
+  png_set_sCAL(png_handler.png_ptr, png_handler.info_ptr, unit, pixel_width, pixel_height);
 
   int passes = png_set_interlace_handling(png_handler.png_ptr);
 
