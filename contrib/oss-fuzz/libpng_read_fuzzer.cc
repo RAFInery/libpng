@@ -132,6 +132,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     {0, 255, 0},   // Green
     {0, 0, 255}    // Blue
   };
+
+  int full_palette = data[40] & 1;
   
   
   // Enable quantization
@@ -139,9 +141,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     png_handler.png_ptr,
     palette,        // Your palette
     3,              // Number of colors in the palette
-    256,            // Max colors allowed
+    2,            // Max colors allowed
     NULL,    // Optional background
-    0               // Do not use full palette unless needed
+    full_palette               // Do not use full palette unless needed
   );  
 
 
