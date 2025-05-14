@@ -199,7 +199,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
                    static_cast<png_bytep>(png_handler.row_ptr), nullptr);
     }
   }
+    (void)png_get_valid(png_handler.png_ptr, png_handler.info_ptr, PNG_INFO_tRNS);
+    (void)png_get_valid(png_handler.png_ptr, png_handler.info_ptr, PNG_INFO_PLTE);
+    (void)png_get_valid(png_handler.png_ptr, png_handler.info_ptr, PNG_INFO_sRGB);
+    (void)png_get_valid(png_handler.png_ptr, png_handler.info_ptr, PNG_INFO_pHYs);
 
+  
   png_read_end(png_handler.png_ptr, png_handler.end_info_ptr);
 
   PNG_CLEANUP
