@@ -196,15 +196,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       PNG_CLEANUP
       return 0;
     }
-
-    /*
-    png_set_IHDR(png_handler.png_ptr, png_handler.info_ptr, width,
-                          height, bit_depth, color_type, interlace_type,
-                          compression_type, PNG_INTRAPIXEL_DIFFERENCING);
     
-    */
-
-  
 
   // This is going to be too slow.
   if (width && height > 100000000 / width) {
@@ -218,11 +210,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   png_set_packing(png_handler.png_ptr);
   png_set_scale_16(png_handler.png_ptr);
   png_set_tRNS_to_alpha(png_handler.png_ptr);
-  png_bytep fake_icc_profile_data = (png_bytep)"\x02\x00\x00\x00\x6c\x63\x6d\x73\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf6\xd6\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x73\x52\x47\x42\x20\x00\x00\x00";
-  png_uint_32 fake_icc_profile_len = strlen((const char*)fake_icc_profile_data);
-  png_const_charp profile_name = "Fake sRGB Profile";
-  //png_set_iCCP(png_handler.png_ptr, png_handler.info_ptr, profile_name, PNG_COMPRESSION_TYPE_BASE,fake_icc_profile_data, fake_icc_profile_len);
-
 
   int passes = png_set_interlace_handling(png_handler.png_ptr);
 
